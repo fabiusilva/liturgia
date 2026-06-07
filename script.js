@@ -1,42 +1,39 @@
-// Mapeamento de todos os inputs da tela para atualização imediata
 const inputsIds = [
     'data', 'horario', 'pregador', 'dirigente', 'louvor', 'extra1',
     'dizimos', 'extra2', 'avisos', 'palavra', 'extra4', 'bencao'
 ];
 
 function atualizarPreview() {
-    // Atualizações simples de texto direto
+    // Atualizações dos textos básicos
     document.getElementById('out-data').innerText = document.getElementById('in-data').value;
     document.getElementById('out-horario').innerText = document.getElementById('in-horario').value;
     document.getElementById('out-pregador').innerText = document.getElementById('in-pregador').value;
     document.getElementById('out-dirigente').innerText = document.getElementById('in-dirigente').value;
     document.getElementById('out-louvor').innerText = document.getElementById('in-louvor').value;
     document.getElementById('out-dizimos').innerText = document.getElementById('in-dizimos').value;
-    
-    // Novas atribuições independentes e editáveis para o 4º Ato
     document.getElementById('out-palavra').innerText = document.getElementById('in-palavra').value;
     document.getElementById('out-bencao').innerText = document.getElementById('in-bencao').value;
 
-    // Lógica para Tratar Acontecimentos Extras Opcionais (1º, 2º e 4º Atos)
+    // Acontecimentos Opcionais
     tratarCampoOpcional('in-extra1', 'out-extra1');
     tratarCampoOpcional('in-extra2', 'out-extra2');
     tratarCampoOpcional('in-extra4', 'out-extra4');
 
-    // Lógica para a Santa Ceia
+    // Santa Ceia condicional
     const ceiaAtiva = document.getElementById('in-ceia').checked;
     document.getElementById('out-ceia').classList.toggle('hidden', !ceiaAtiva);
 
-    // Renderizar a lista de avisos com o primeiro e o último fixos
+    // Geração da lista de avisos
     const avisosTexto = document.getElementById('in-avisos').value.split('\n');
     const listaAvisos = document.getElementById('out-avisos');
     listaAvisos.innerHTML = '';
 
-    // Aviso Fixo de Início
+    // Fixo Inicial
     const liInicio = document.createElement('li');
     liInicio.textContent = 'Boas Vindas aos Visitantes;';
     listaAvisos.appendChild(liInicio);
 
-    // Avisos Dinâmicos digitados
+    // Avisos dinâmicos digitados
     avisosTexto.forEach(aviso => {
         if(aviso.trim() !== "") {
             const li = document.createElement('li');
@@ -45,13 +42,12 @@ function atualizarPreview() {
         }
     });
 
-    // Aviso Fixo Final
+    // Fixo Final
     const liFim = document.createElement('li');
     liFim.textContent = 'Oferta Missionária;';
     listaAvisos.appendChild(liFim);
 }
 
-// Função auxiliar para esconder elementos se estiverem em branco
 function tratarCampoOpcional(inputId, outputId) {
     const valor = document.getElementById(inputId).value.trim();
     const elementoOut = document.getElementById(outputId);
@@ -63,13 +59,13 @@ function tratarCampoOpcional(inputId, outputId) {
     }
 }
 
-// Vincula o evento 'input' em todos os campos para atualizar em tempo real
+// Ouvintes de eventos para inputs e checkboxes
 inputsIds.forEach(id => {
     document.getElementById(`in-${id}`).addEventListener('input', atualizarPreview);
 });
 document.getElementById('in-ceia').addEventListener('change', atualizarPreview);
 
-// Função para baixar a imagem individual em PNG
+// Baixar Imagem PNG
 function baixarPNG() {
     const card = document.getElementById('card-unico');
     html2canvas(card, { scale: 2 }).then(canvas => {
@@ -80,23 +76,21 @@ function baixarPNG() {
     });
 }
 
-// Função para estruturar os 3 cards na folha de impressão horizontal
+// Impressão 3x forçada em página única horizontal
 function imprimir3x() {
     const printArea = document.getElementById('print-area');
     const cardOriginal = document.getElementById('card-unico');
     
-    printArea.innerHTML = ''; // Limpa a área anterior da última impressão
+    printArea.innerHTML = ''; 
     
-    // Clona o card atualizado 3 vezes de forma idêntica
     for (let i = 0; i < 3; i++) {
         const clone = cardOriginal.cloneNode(true);
         clone.id = `card-clone-${i}`;
         printArea.appendChild(clone);
     }
     
-    // Dispara a janela de impressão do navegador
     window.print();
 }
 
-// Inicialização imediata ao abrir a aplicação
+// Inicializa no carregamento do app
 atualizarPreview();
