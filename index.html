@@ -10,24 +10,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
-        /* Estilo da Tag do Ato: Texto puro no canto superior direito */
+        /* Estilo da Tag do Ato: Texto puro em cima da linha no canto superior direito */
+        .ato-container-relative {
+            position: relative;
+        }
         .ato-tag-pure {
             position: absolute;
-            top: 8px;
-            right: 12px;
+            top: -12px; /* Joga o texto exatamente para cima da linha superior */
+            right: 16px;
             color: #c27d4f;
             font-size: 12px;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            background-color: white; /* Fundo branco para cobrir a linha cinza embaixo do texto */
+            padding: 0 8px; /* Dá um espacinho nas laterais do texto */
         }
 
         /* CONFIGURAÇÃO EXCLUSIVA PARA IMPRESSÃO (A4 PAISAGEM - 1 PÁGINA) */
         @media print {
-            /* DESTRÓI os elementos da tela para eliminar de vez as páginas em branco fantasmas */
+            /* Remove os elementos da tela para eliminar páginas em branco fantasmas */
             body > div:first-child { display: none !important; }
             
-            /* Ativa e força a área de impressão a ocupar a folha inteira */
+            /* Força a área de impressão a ocupar a folha inteira */
             #print-area {
                 display: flex !important;
                 justify-content: space-between !important;
@@ -50,7 +55,7 @@
                 box-shadow: none !important;
                 border: 2px solid #555 !important;
                 padding: 16px !important;
-                font-size: 18px !important; /* Fonte em 18px conforme solicitado */
+                font-size: 18px !important; 
                 line-height: 1.4 !important;
                 display: flex;
                 flex-direction: column;
@@ -61,7 +66,7 @@
             /* Hierarquia de tamanhos grandes para leitura na impressão */
             .card-liturgia h3 { font-size: 24px !important; margin-bottom: 4px !important; }
             .card-liturgia p, .card-liturgia li { font-size: 17px !important; }
-            .ato-tag-pure { font-size: 15px !important; top: 6px !important; right: 12px !important; }
+            .ato-tag-pure { font-size: 15px !important; top: -14px !important; right: 16px !important; }
             .card-liturgia .border { padding: 12px !important; margin-bottom: 8px !important; }
             .card-liturgia ul { padding-left: 24px !important; }
 
@@ -171,15 +176,15 @@
             <div class="bg-gray-50 p-4 rounded-xl border flex flex-col items-center justify-start overflow-y-auto">
                 <h2 class="text-lg font-semibold text-gray-700 mb-4 self-start">Visualização da Liturgia</h2>
                 
-                <!-- Card Único -->
-                <div id="card-unico" class="card-liturgia bg-white w-[350px] p-5 rounded-xl shadow-md border border-gray-200 text-sm font-sans space-y-3.5 relative">
+                <!-- Card Único (Preview) -->
+                <div id="card-unico" class="card-liturgia bg-white w-[350px] p-5 rounded-xl shadow-md border border-gray-200 text-sm font-sans space-y-4">
                     <div class="text-center">
                         <h3 class="text-xl font-bold tracking-wide text-gray-900">CULTO - <span id="out-data">00/00/00</span></h3>
                         <p class="italic text-gray-600 text-xs">Início: <span id="out-horario">10:00hs</span></p>
                     </div>
 
                     <!-- 1º Ato -->
-                    <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5 relative pt-5">
+                    <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5 ato-container-relative pt-4">
                         <span class="ato-tag-pure">1° Ato</span>
                         <p><strong>Pregador:</strong> <span id="out-pregador">...</span></p>
                         <p><strong>Dirigente:</strong> <span id="out-dirigente">...</span></p>
@@ -188,7 +193,7 @@
                     </div>
 
                     <!-- 2º Ato -->
-                    <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5 relative pt-5">
+                    <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5 ato-container-relative pt-4">
                         <span class="ato-tag-pure">2° Ato</span>
                         <p><strong>Dízimos e Ofertas:</strong> <span id="out-dizimos">...</span></p>
                         <p id="out-ceia" class="font-bold text-red-700 mt-1 hidden">Ministração da Santa Ceia</p>
@@ -196,7 +201,7 @@
                     </div>
 
                     <!-- 3º Ato -->
-                    <div class="border border-gray-200 rounded-lg p-3 bg-white relative pt-5">
+                    <div class="border border-gray-200 rounded-lg p-3 bg-white ato-container-relative pt-4">
                         <span class="ato-tag-pure">3° Ato</span>
                         <p class="font-semibold text-gray-800 mb-1">Avisos e Acolhimento</p>
                         <ul id="out-avisos" class="list-disc pl-4 space-y-0.5 text-xs text-gray-700">
@@ -205,13 +210,13 @@
                     </div>
 
                     <!-- 4º Ato -->
-                    <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5 relative pt-5">
+                    <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5 ato-container-relative pt-4">
                         <span class="ato-tag-pure">4° Ato</span>
                         <p><strong>Ministração Palavra:</strong> <span id="out-palavra">...</span></p>
                         <p id="out-extra4" class="text-blue-700 font-medium italic mt-1 hidden"></p>
                         <p><strong>Bênção Apostólica:</strong> <span id="out-bencao">...</span></p>
                     </div>
-                </div>
+                </div>>
             </div>
         </div>
     </div>
