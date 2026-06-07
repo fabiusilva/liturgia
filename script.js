@@ -1,7 +1,11 @@
-// Mapeamento dos elementos para atualização em tempo real
-const inputs = ['data', 'horario', 'pregador', 'dirigente', 'louvor', 'dizimos', 'ceia', 'avisos'];
+// Mapeamento de todos os inputs da tela para atualização imediata
+const inputsIds = [
+    'data', 'horario', 'pregador', 'dirigente', 'louvor', 'extra1',
+    'dizimos', 'extra2', 'avisos', 'palavra', 'extra4', 'bencao'
+];
 
 function atualizarPreview() {
+    // Atualizações simples de texto direto
     document.getElementById('out-data').innerText = document.getElementById('in-data').value;
     document.getElementById('out-horario').innerText = document.getElementById('in-horario').value;
     document.getElementById('out-pregador').innerText = document.getElementById('in-pregador').value;
@@ -9,20 +13,25 @@ function atualizarPreview() {
     document.getElementById('out-louvor').innerText = document.getElementById('in-louvor').value;
     document.getElementById('out-dizimos').innerText = document.getElementById('in-dizimos').value;
     
-    // Repete o pregador e dirigente no 4º Ato conforme o modelo padrão fornecido
-    document.getElementById('out-palavra').innerText = document.getElementById('in-pregador').value;
-    document.getElementById('out-bencao').innerText = document.getElementById('in-dirigente').value;
+    // Novas atribuições independentes e editáveis para o 4º Ato
+    document.getElementById('out-palavra').innerText = document.getElementById('in-palavra').value;
+    document.getElementById('out-bencao').innerText = document.getElementById('in-bencao').value;
 
-    // Trata a exibição condicional da Santa Ceia
+    // Lógica para Tratar Acontecimentos Extras Opcionais (1º, 2º e 4º Atos)
+    tratarCampoOpcional('in-extra1', 'out-extra1');
+    tratarCampoOpcional('in-extra2', 'out-extra2');
+    tratarCampoOpcional('in-extra4', 'out-extra4');
+
+    // Lógica para a Santa Ceia
     const ceiaAtiva = document.getElementById('in-ceia').checked;
     document.getElementById('out-ceia').classList.toggle('hidden', !ceiaAtiva);
 
-    // Renderiza a lista de avisos (Colocando o primeiro e o último fixos)
+    // Renderizar a lista de avisos com o primeiro e o último fixos
     const avisosTexto = document.getElementById('in-avisos').value.split('\n');
     const listaAvisos = document.getElementById('out-avisos');
     listaAvisos.innerHTML = '';
 
-    // Aviso Fixo 1
+    // Aviso Fixo de Início
     const liInicio = document.createElement('li');
     liInicio.textContent = 'Boas Vindas aos Visitantes;';
     listaAvisos.appendChild(liInicio);
@@ -42,8 +51,20 @@ function atualizarPreview() {
     listaAvisos.appendChild(liFim);
 }
 
-// Escuta as mudanças no formulário para mudar o preview na hora
-inputs.forEach(id => {
+// Função auxiliar para esconder elementos se estiverem em branco
+function tratarCampoOpcional(inputId, outputId) {
+    const valor = document.getElementById(inputId).value.trim();
+    const elementoOut = document.getElementById(outputId);
+    if(valor !== "") {
+        elementoOut.innerText = valor;
+        elementoOut.classList.remove('hidden');
+    } else {
+        elementoOut.classList.add('hidden');
+    }
+}
+
+// Vincula o evento 'input' em todos os campos para atualizar em tempo real
+inputsIds.forEach(id => {
     document.getElementById(`in-${id}`).addEventListener('input', atualizarPreview);
 });
 document.getElementById('in-ceia').addEventListener('change', atualizarPreview);
@@ -64,9 +85,9 @@ function imprimir3x() {
     const printArea = document.getElementById('print-area');
     const cardOriginal = document.getElementById('card-unico');
     
-    printArea.innerHTML = ''; // Limpa a área anterior
+    printArea.innerHTML = ''; // Limpa a área anterior da última impressão
     
-    // Clona o card atualizado 3 vezes dentro da div de impressão
+    // Clona o card atualizado 3 vezes de forma idêntica
     for (let i = 0; i < 3; i++) {
         const clone = cardOriginal.cloneNode(true);
         clone.id = `card-clone-${i}`;
@@ -77,5 +98,5 @@ function imprimir3x() {
     window.print();
 }
 
-// Executa uma vez ao abrir a página para carregar os valores iniciais padrão
+// Inicialização imediata ao abrir a aplicação
 atualizarPreview();
