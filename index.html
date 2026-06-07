@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Liturgia - Igreja</title>
-    <!-- Tailwind CSS para um visual limpo e rápido -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- html2canvas para gerar o PNG do card -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
@@ -48,7 +46,7 @@
 
             /* Hierarquia de tamanhos grandes para leitura na impressão */
             .card-liturgia h3 { font-size: 24px !important; margin-bottom: 4px !important; }
-            .card-liturgia p, .card-liturgia li { font-size: 17px !important; }
+            .card-liturgia p, .card-liturgia li { font-size: 17px !important; color: black !important; }
             .card-liturgia .border { padding: 10px !important; margin-bottom: 6px !important; }
             .card-liturgia ul { padding-left: 24px !important; }
 
@@ -66,7 +64,6 @@
         <h1 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">⛪ Gerador de Liturgia</h1>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- COLUNA DA ESQUERDA: FORMULÁRIO -->
             <div class="space-y-4 max-h-[82vh] overflow-y-auto pr-2">
                 <h2 class="text-lg font-semibold text-gray-700">Editar Informações</h2>
                 
@@ -81,7 +78,6 @@
                     </div>
                 </div>
 
-                <!-- 1º BLOCO EDITÁVEL -->
                 <div class="bg-orange-50/50 p-3 rounded-lg border border-orange-100 space-y-3">
                     <span class="text-xs font-bold text-orange-700 uppercase">Configurações do 1° Bloco</span>
                     <div>
@@ -102,7 +98,6 @@
                     </div>
                 </div>
 
-                <!-- 2º BLOCO EDITÁVEL -->
                 <div class="bg-orange-50/50 p-3 rounded-lg border border-orange-100 space-y-3">
                     <span class="text-xs font-bold text-orange-700 uppercase">Configurações do 2° Bloco</span>
                     <div>
@@ -119,14 +114,12 @@
                     </div>
                 </div>
 
-                <!-- 3º BLOCO EDITÁVEL -->
                 <div class="bg-orange-50/50 p-3 rounded-lg border border-orange-100 space-y-2">
                     <span class="text-xs font-bold text-orange-700 uppercase">Configurações do 3° Bloco (Avisos)</span>
                     <label class="block text-sm font-medium text-gray-600">Avisos da Semana (Um por linha)</label>
                     <textarea id="in-avisos" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border text-sm">Reunião de Mulheres na Terça às 19:30&#13;Ensaio do Ministério de Louvor na Quinta&#13;Mutirão de Limpeza no Sábado&#13;Reunião de Líderes dia 13/06 (Sábado às 8:30)&#13;Ação Social dia 27/06 - Pastores Francisco e Carmem</textarea>
                 </div>
 
-                <!-- 4º BLOCO EDITÁVEL -->
                 <div class="bg-orange-50/50 p-3 rounded-lg border border-orange-100 space-y-3">
                     <span class="text-xs font-bold text-orange-700 uppercase">Configurações do 4° Bloco</span>
                     <div>
@@ -143,7 +136,6 @@
                     </div>
                 </div>
 
-                <!-- BOTÕES DE AÇÃO -->
                 <div class="pt-2 flex gap-4">
                     <button onclick="baixarPNG()" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-4 rounded shadow transition-all">
                         📥 Baixar PNG
@@ -154,18 +146,15 @@
                 </div>
             </div>
 
-            <!-- COLUNA DA DIREITA: PREVIEW EM TEMPO REAL -->
             <div class="bg-gray-50 p-4 rounded-xl border flex flex-col items-center justify-start overflow-y-auto">
                 <h2 class="text-lg font-semibold text-gray-700 mb-4 self-start">Visualização da Liturgia</h2>
                 
-                <!-- Card Único (Preview) -->
                 <div id="card-unico" class="card-liturgia bg-white w-[350px] p-5 rounded-xl shadow-md border border-gray-200 text-sm font-sans space-y-4">
                     <div class="text-center">
                         <h3 class="text-xl font-bold tracking-wide text-gray-900">CULTO - <span id="out-data">00/00/00</span></h3>
                         <p class="italic text-gray-600 text-xs">Início: <span id="out-horario">10:00hs</span></p>
                     </div>
 
-                    <!-- 1º Bloco -->
                     <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5">
                         <p><strong>Pregador:</strong> <span id="out-pregador">...</span></p>
                         <p><strong>Dirigente:</strong> <span id="out-dirigente">...</span></p>
@@ -173,35 +162,6 @@
                         <p id="out-extra1" class="text-blue-700 font-medium italic mt-1 hidden"></p>
                     </div>
 
-                    <!-- 2º Bloco -->
                     <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5">
                         <p><strong>Dízimos e Ofertas:</strong> <span id="out-dizimos">...</span></p>
-                        <p id="out-ceia" class="font-bold text-red-700 mt-1 hidden">Ministração da Santa Ceia</p>
-                        <p id="out-extra2" class="text-blue-700 font-medium italic mt-1 hidden"></p>
-                    </div>
-
-                    <!-- 3º Bloco -->
-                    <div class="border border-gray-200 rounded-lg p-3 bg-white">
-                        <p class="font-semibold text-gray-800 mb-1">Avisos e Acolhimento</p>
-                        <ul id="out-avisos" class="list-disc pl-4 space-y-0.5 text-xs text-gray-700">
-                            <!-- Inserido via JS -->
-                        </ul>
-                    </div>
-
-                    <!-- 4º Bloco -->
-                    <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5">
-                        <p><strong>Ministração Palavra:</strong> <span id="out-palavra">...</span></p>
-                        <p id="out-extra4" class="text-blue-700 font-medium italic mt-1 hidden"></p>
-                        <p><strong>Bênção Apostólica:</strong> <span id="out-bencao">...</span></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Área Oculta para Impressão -->
-    <div id="print-area"></div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+                        <p id="out-ceia" class="font-bold text-red-700 mt-
