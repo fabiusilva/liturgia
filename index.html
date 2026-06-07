@@ -10,67 +10,65 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
-        /* Estilo das Tags dos Atos Centralizadas */
-        .ato-tag-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 8px;
-        }
-        .ato-tag-style {
-            background-color: #f3c19d;
-            color: #1f2937;
-            font-size: 11px;
+        /* Estilo da Tag do Ato: Texto puro no canto superior direito */
+        .ato-tag-pure {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            color: #c27d4f;
+            font-size: 12px;
             font-weight: bold;
-            padding: 2px 14px;
-            border-radius: 9999px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
 
-        /* CONFIGURAÇÃO EXCLUSIVA PARA IMPRESSÃO (A4 PAISAGEM - PÁGINA ÚNICA) */
+        /* CONFIGURAÇÃO EXCLUSIVA PARA IMPRESSÃO (A4 PAISAGEM - 1 PÁGINA) */
         @media print {
-            /* Esconde tudo do app, exceto a área de impressão */
-            body * { visibility: hidden; }
-            #print-area, #print-area * { visibility: visible; }
+            /* DESTRÓI os elementos da tela para eliminar de vez as páginas em branco fantasmas */
+            body > div:first-child { display: none !important; }
             
-            /* Força a área a ocupar o topo e a tela cheia */
+            /* Ativa e força a área de impressão a ocupar a folha inteira */
             #print-area {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
                 display: flex !important;
                 justify-content: space-between !important;
-                gap: 15px;
+                gap: 20px;
+                width: 100% !important;
+                height: 100% !important;
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
                 box-sizing: border-box;
                 background: white;
             }
 
-            /* Redimensiona e otimiza as fontes dos 3 cards clonados na folha */
+            /* Configuração dos 3 cards expandidos com fonte 18px */
             .card-liturgia {
-                width: 32% !important;
-                height: 98% !important;
+                width: 31% !important;
+                height: 96vh !important;
                 box-shadow: none !important;
-                border: 1px solid #999 !important;
-                padding: 12px !important;
-                font-size: 16px !important; /* Fonte maior para aproveitar as margens */
+                border: 2px solid #555 !important;
+                padding: 16px !important;
+                font-size: 18px !important; /* Fonte em 18px conforme solicitado */
                 line-height: 1.4 !important;
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;
+                page-break-inside: avoid;
             }
 
-            /* Ajustes finos de fontes maiores dentro do PDF impresso */
-            .card-liturgia h3 { font-size: 22px !important; }
-            .card-liturgia p, .card-liturgia li { font-size: 15px !important; }
-            .ato-tag-style { font-size: 13px !important; padding: 3px 18px !important; }
-            .card-liturgia .border { padding: 8px !important; margin-bottom: 6px !important; }
+            /* Hierarquia de tamanhos grandes para leitura na impressão */
+            .card-liturgia h3 { font-size: 24px !important; margin-bottom: 4px !important; }
+            .card-liturgia p, .card-liturgia li { font-size: 17px !important; }
+            .ato-tag-pure { font-size: 15px !important; top: 6px !important; right: 12px !important; }
+            .card-liturgia .border { padding: 12px !important; margin-bottom: 8px !important; }
+            .card-liturgia ul { padding-left: 24px !important; }
 
-            /* Força o navegador a aplicar layout horizontal e remover cabeçalhos da página */
+            /* Força as propriedades de página do navegador */
             @page { 
                 size: landscape; 
-                margin: 0.4cm; 
+                margin: 0.3cm; 
             }
         }
     </style>
@@ -174,15 +172,15 @@
                 <h2 class="text-lg font-semibold text-gray-700 mb-4 self-start">Visualização da Liturgia</h2>
                 
                 <!-- Card Único -->
-                <div id="card-unico" class="card-liturgia bg-white w-[350px] p-5 rounded-xl shadow-md border border-gray-200 text-sm font-sans space-y-3.5">
+                <div id="card-unico" class="card-liturgia bg-white w-[350px] p-5 rounded-xl shadow-md border border-gray-200 text-sm font-sans space-y-3.5 relative">
                     <div class="text-center">
                         <h3 class="text-xl font-bold tracking-wide text-gray-900">CULTO - <span id="out-data">00/00/00</span></h3>
                         <p class="italic text-gray-600 text-xs">Início: <span id="out-horario">10:00hs</span></p>
                     </div>
 
                     <!-- 1º Ato -->
-                    <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5">
-                        <div class="ato-tag-container"><span class="ato-tag-style">1° Ato</span></div>
+                    <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5 relative pt-5">
+                        <span class="ato-tag-pure">1° Ato</span>
                         <p><strong>Pregador:</strong> <span id="out-pregador">...</span></p>
                         <p><strong>Dirigente:</strong> <span id="out-dirigente">...</span></p>
                         <p><strong>Louvor 3 músicas:</strong> <span id="out-louvor">...</span></p>
@@ -190,25 +188,25 @@
                     </div>
 
                     <!-- 2º Ato -->
-                    <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5">
-                        <div class="ato-tag-container"><span class="ato-tag-style">2° Ato</span></div>
+                    <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5 relative pt-5">
+                        <span class="ato-tag-pure">2° Ato</span>
                         <p><strong>Dízimos e Ofertas:</strong> <span id="out-dizimos">...</span></p>
                         <p id="out-ceia" class="font-bold text-red-700 mt-1 hidden">Ministração da Santa Ceia</p>
                         <p id="out-extra2" class="text-blue-700 font-medium italic mt-1 hidden"></p>
                     </div>
 
                     <!-- 3º Ato -->
-                    <div class="border border-gray-200 rounded-lg p-3 bg-white">
-                        <div class="ato-tag-container"><span class="ato-tag-style">3° Ato</span></div>
-                        <p class="font-semibold text-gray-800 mb-1 text-center">Avisos e Acolhimento</p>
+                    <div class="border border-gray-200 rounded-lg p-3 bg-white relative pt-5">
+                        <span class="ato-tag-pure">3° Ato</span>
+                        <p class="font-semibold text-gray-800 mb-1">Avisos e Acolhimento</p>
                         <ul id="out-avisos" class="list-disc pl-4 space-y-0.5 text-xs text-gray-700">
                             <!-- Inserido via JS -->
                         </ul>
                     </div>
 
                     <!-- 4º Ato -->
-                    <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5">
-                        <div class="ato-tag-container"><span class="ato-tag-style">4° Ato</span></div>
+                    <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5 relative pt-5">
+                        <span class="ato-tag-pure">4° Ato</span>
                         <p><strong>Ministração Palavra:</strong> <span id="out-palavra">...</span></p>
                         <p id="out-extra4" class="text-blue-700 font-medium italic mt-1 hidden"></p>
                         <p><strong>Bênção Apostólica:</strong> <span id="out-bencao">...</span></p>
@@ -219,7 +217,7 @@
     </div>
 
     <!-- Área Oculta para Impressão -->
-    <div id="print-area" class="hidden"></div>
+    <div id="print-area"></div>
 
     <script src="script.js"></script>
 </body>
