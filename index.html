@@ -10,26 +10,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
-        /* Estilo da Tag do Ato: Texto puro em cima da linha no canto superior direito */
-        .ato-container-relative {
-            position: relative;
-        }
-        .ato-tag-pure {
-            position: absolute;
-            top: -12px; /* Joga o texto exatamente para cima da linha superior */
-            right: 16px;
-            color: #c27d4f;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            background-color: white; /* Fundo branco para cobrir a linha cinza embaixo do texto */
-            padding: 0 8px; /* Dá um espacinho nas laterais do texto */
-        }
-
-        /* CONFIGURAÇÃO EXCLUSIVA PARA IMPRESSÃO (A4 PAISAGEM - 1 PÁGINA) */
+        /* CONFIGURAÇÃO EXCLUSIVA PARA IMPRESSÃO (A4 PAISAGEM - 1 PÁGINA RIGOROSA) */
         @media print {
-            /* Remove os elementos da tela para eliminar páginas em branco fantasmas */
+            /* Remove por completo os elementos da tela para eliminar páginas em branco fantasmas */
             body > div:first-child { display: none !important; }
             
             /* Força a área de impressão a ocupar a folha inteira */
@@ -66,11 +49,10 @@
             /* Hierarquia de tamanhos grandes para leitura na impressão */
             .card-liturgia h3 { font-size: 24px !important; margin-bottom: 4px !important; }
             .card-liturgia p, .card-liturgia li { font-size: 17px !important; }
-            .ato-tag-pure { font-size: 15px !important; top: -14px !important; right: 16px !important; }
-            .card-liturgia .border { padding: 12px !important; margin-bottom: 8px !important; }
+            .card-liturgia .border { padding: 10px !important; margin-bottom: 6px !important; }
             .card-liturgia ul { padding-left: 24px !important; }
 
-            /* Força as propriedades de página do navegador */
+            /* Força as propriedades de página horizontal do navegador */
             @page { 
                 size: landscape; 
                 margin: 0.3cm; 
@@ -99,9 +81,9 @@
                     </div>
                 </div>
 
-                <!-- 1º ATO EDITÁVEL -->
+                <!-- 1º BLOCO EDITÁVEL -->
                 <div class="bg-orange-50/50 p-3 rounded-lg border border-orange-100 space-y-3">
-                    <span class="text-xs font-bold text-orange-700 uppercase">Campos do 1° Ato</span>
+                    <span class="text-xs font-bold text-orange-700 uppercase">Configurações do 1° Bloco</span>
                     <div>
                         <label class="block text-sm font-medium text-gray-600">Pregador</label>
                         <input type="text" id="in-pregador" value="Pastor Rafael Almeida" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border">
@@ -120,9 +102,9 @@
                     </div>
                 </div>
 
-                <!-- 2º ATO EDITÁVEL -->
+                <!-- 2º BLOCO EDITÁVEL -->
                 <div class="bg-orange-50/50 p-3 rounded-lg border border-orange-100 space-y-3">
-                    <span class="text-xs font-bold text-orange-700 uppercase">Campos do 2° Ato</span>
+                    <span class="text-xs font-bold text-orange-700 uppercase">Configurações do 2° Bloco</span>
                     <div>
                         <label class="block text-sm font-medium text-gray-600">Dízimos e Ofertas</label>
                         <input type="text" id="in-dizimos" value="Yuri Lopes" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border">
@@ -137,16 +119,16 @@
                     </div>
                 </div>
 
-                <!-- 3º ATO EDITÁVEL -->
+                <!-- 3º BLOCO EDITÁVEL -->
                 <div class="bg-orange-50/50 p-3 rounded-lg border border-orange-100 space-y-2">
-                    <span class="text-xs font-bold text-orange-700 uppercase">Campos do 3° Ato</span>
+                    <span class="text-xs font-bold text-orange-700 uppercase">Configurações do 3° Bloco (Avisos)</span>
                     <label class="block text-sm font-medium text-gray-600">Avisos da Semana (Um por linha)</label>
                     <textarea id="in-avisos" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border text-sm">Reunião de Mulheres na Terça às 19:30&#13;Ensaio do Ministério de Louvor na Quinta&#13;Mutirão de Limpeza no Sábado&#13;Reunião de Líderes dia 13/06 (Sábado às 8:30)&#13;Ação Social dia 27/06 - Pastores Francisco e Carmem</textarea>
                 </div>
 
-                <!-- 4º ATO EDITÁVEL -->
+                <!-- 4º BLOCO EDITÁVEL -->
                 <div class="bg-orange-50/50 p-3 rounded-lg border border-orange-100 space-y-3">
-                    <span class="text-xs font-bold text-orange-700 uppercase">Campos do 4° Ato</span>
+                    <span class="text-xs font-bold text-orange-700 uppercase">Configurações do 4° Bloco</span>
                     <div>
                         <label class="block text-sm font-medium text-gray-600">Ministração Palavra</label>
                         <input type="text" id="in-palavra" value="Pastor Rafael Almeida" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border">
@@ -183,40 +165,36 @@
                         <p class="italic text-gray-600 text-xs">Início: <span id="out-horario">10:00hs</span></p>
                     </div>
 
-                    <!-- 1º Ato -->
-                    <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5 ato-container-relative pt-4">
-                        <span class="ato-tag-pure">1° Ato</span>
+                    <!-- 1º Bloco -->
+                    <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5">
                         <p><strong>Pregador:</strong> <span id="out-pregador">...</span></p>
                         <p><strong>Dirigente:</strong> <span id="out-dirigente">...</span></p>
                         <p><strong>Louvor 3 músicas:</strong> <span id="out-louvor">...</span></p>
                         <p id="out-extra1" class="text-blue-700 font-medium italic mt-1 hidden"></p>
                     </div>
 
-                    <!-- 2º Ato -->
-                    <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5 ato-container-relative pt-4">
-                        <span class="ato-tag-pure">2° Ato</span>
+                    <!-- 2º Bloco -->
+                    <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5">
                         <p><strong>Dízimos e Ofertas:</strong> <span id="out-dizimos">...</span></p>
                         <p id="out-ceia" class="font-bold text-red-700 mt-1 hidden">Ministração da Santa Ceia</p>
                         <p id="out-extra2" class="text-blue-700 font-medium italic mt-1 hidden"></p>
                     </div>
 
-                    <!-- 3º Ato -->
-                    <div class="border border-gray-200 rounded-lg p-3 bg-white ato-container-relative pt-4">
-                        <span class="ato-tag-pure">3° Ato</span>
+                    <!-- 3º Bloco -->
+                    <div class="border border-gray-200 rounded-lg p-3 bg-white">
                         <p class="font-semibold text-gray-800 mb-1">Avisos e Acolhimento</p>
                         <ul id="out-avisos" class="list-disc pl-4 space-y-0.5 text-xs text-gray-700">
                             <!-- Inserido via JS -->
                         </ul>
                     </div>
 
-                    <!-- 4º Ato -->
-                    <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5 ato-container-relative pt-4">
-                        <span class="ato-tag-pure">4° Ato</span>
+                    <!-- 4º Bloco -->
+                    <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5">
                         <p><strong>Ministração Palavra:</strong> <span id="out-palavra">...</span></p>
                         <p id="out-extra4" class="text-blue-700 font-medium italic mt-1 hidden"></p>
                         <p><strong>Bênção Apostólica:</strong> <span id="out-bencao">...</span></p>
                     </div>
-                </div>>
+                </div>
             </div>
         </div>
     </div>
