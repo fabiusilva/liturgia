@@ -1,5 +1,5 @@
-// Lista expandida com todos os IDs de inputs para capturar as alterações e persistir
-const textInputs = ['data', 'horario', 'pregador', 'dirigente', 'louvor', 'extra1', 'oracao-resp', 'dizimos', 'ceia-resp', 'extra2', 'avisos', 'palavra', 'extra4', 'bencao'];
+// Adicionado 'aviso-final' à lista de controle de salvamento e manipulação de textos
+const textInputs = ['data', 'horario', 'pregador', 'dirigente', 'louvor', 'extra1', 'oracao-resp', 'dizimos', 'ceia-resp', 'extra2', 'avisos', 'palavra', 'extra4', 'aviso-final', 'bencao'];
 const checkInputs = ['oracao-check', 'ceia'];
 
 // FUNÇÃO PARA SALVAR TUDO NO LOCALSTORAGE DO NAVEGADOR
@@ -19,7 +19,7 @@ function salvarNoNavegador() {
 // FUNÇÃO PARA CARREGAR OS DADOS SALVOS DA ÚLTIMA VEZ
 function carregarDoNavegador() {
     const memoria = localStorage.getItem('memoria_liturgia_culto');
-    if (!memoria) return; // Se for o primeiro acesso, mantém o padrão do HTML
+    if (!memoria) return;
 
     const dadosCulto = JSON.parse(memoria);
 
@@ -36,14 +36,14 @@ function carregarDoNavegador() {
 }
 
 function atualizarPreview() {
-    // Esconde ou exibe os inputs extras de responsáveis no formulário para organização visual
+    // Exibe/Oculta inputs dos responsáveis conforme as caixas marcadas
     const oracaoAtiva = document.getElementById('in-oracao-check').checked;
     document.getElementById('div-in-oracao-resp').classList.toggle('hidden', !oracaoAtiva);
     
     const ceiaAtiva = document.getElementById('in-ceia').checked;
     document.getElementById('div-in-ceia-resp').classList.toggle('hidden', !ceiaAtiva);
 
-    // Repassa os textos para a visualização gráfica (Preview)
+    // Repassa os textos para o preview
     document.getElementById('out-data').innerText = document.getElementById('in-data').value;
     document.getElementById('out-horario').innerText = document.getElementById('in-horario').value;
     document.getElementById('out-pregador').innerText = document.getElementById('in-pregador').value;
@@ -53,12 +53,13 @@ function atualizarPreview() {
     document.getElementById('out-palavra').innerText = document.getElementById('in-palavra').value;
     document.getElementById('out-bencao').innerText = document.getElementById('in-bencao').value;
 
-    // Tratamento dos Acontecimentos Opcionais por texto
+    // Tratamento dos Acontecimentos Opcionais
     tratarCampoOpcional('in-extra1', 'out-extra1');
     tratarCampoOpcional('in-extra2', 'out-extra2');
     tratarCampoOpcional('in-extra4', 'out-extra4');
+    tratarCampoOpcional('in-aviso-final', 'out-aviso-final'); // NOVO: Aviso de última hora
 
-    // Exibição Condicional do Momento de Oração no Bloco 2
+    // Exibição Condicional do Momento de Oração
     const elOracaoOut = document.getElementById('out-oracao');
     if (oracaoAtiva) {
         document.getElementById('out-oracao-resp').innerText = document.getElementById('in-oracao-resp').value;
@@ -67,7 +68,7 @@ function atualizarPreview() {
         elOracaoOut.classList.add('hidden');
     }
 
-    // Exibição Condicional da Santa Ceia com Responsável no Bloco 2
+    // Exibição Condicional da Santa Ceia
     const elCeiaOut = document.getElementById('out-ceia');
     if (ceiaAtiva) {
         document.getElementById('out-ceia-resp').innerText = document.getElementById('in-ceia-resp').value;
@@ -76,7 +77,7 @@ function atualizarPreview() {
         elCeiaOut.classList.add('hidden');
     }
 
-    // Geração dinâmica da lista de avisos (Primeiro e último são fixos)
+    // Geração dinâmica dos avisos
     const avisosTexto = document.getElementById('in-avisos').value.split('\n');
     const listaAvisos = document.getElementById('out-avisos');
     listaAvisos.innerHTML = '';
@@ -97,7 +98,7 @@ function atualizarPreview() {
     liFim.textContent = 'Oferta Missionária;';
     listaAvisos.appendChild(liFim);
 
-    // Salva o estado atual na memória interna sempre que houver alteração
+    // Salva o estado atual na memória interna
     salvarNoNavegador();
 }
 
@@ -112,7 +113,7 @@ function tratarCampoOpcional(inputId, outputId) {
     }
 }
 
-// Ouvintes de eventos automáticos anexados a todos os inputs da tela
+// Escutadores de eventos
 textInputs.forEach(id => {
     document.getElementById(`in-${id}`).addEventListener('input', atualizarPreview);
 });
@@ -131,7 +132,7 @@ function baixarPNG() {
     });
 }
 
-// Impressão 3x forçada em página única horizontal
+// Impressão 3x
 function imprimir3x() {
     const printArea = document.getElementById('print-area');
     const cardOriginal = document.getElementById('card-unico');
@@ -147,6 +148,6 @@ function imprimir3x() {
     window.print();
 }
 
-// Execução sequencial no carregamento do app
+// Inicialização
 carregarDoNavegador();
 atualizarPreview();
