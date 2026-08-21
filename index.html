@@ -12,10 +12,8 @@
     <style>
         /* CONFIGURAÇÃO EXCLUSIVA PARA IMPRESSÃO (A4 PAISAGEM - 1 PÁGINA RIGOROSA) */
         @media print {
-            /* Remove por completo os elementos da tela para eliminar páginas em branco fantasmas */
             body > div:first-child { display: none !important; }
             
-            /* Força a área de impressão a ocupar a folha inteira */
             #print-area {
                 display: flex !important;
                 justify-content: space-between !important;
@@ -31,7 +29,6 @@
                 background: white;
             }
 
-            /* Configuração dos 3 cards expandidos com fonte 18px */
             .card-liturgia {
                 width: 31% !important;
                 height: 96vh !important;
@@ -46,13 +43,11 @@
                 page-break-inside: avoid;
             }
 
-            /* Hierarquia de tamanhos grandes para leitura na impressão */
             .card-liturgia h3 { font-size: 24px !important; margin-bottom: 4px !important; }
             .card-liturgia p, .card-liturgia li { font-size: 17px !important; color: black !important; }
             .card-liturgia .border { padding: 10px !important; margin-bottom: 6px !important; }
             .card-liturgia ul { padding-left: 24px !important; }
 
-            /* Força as propriedades de página horizontal do navegador */
             @page { 
                 size: landscape; 
                 margin: 0.3cm; 
@@ -109,7 +104,6 @@
                 <div class="bg-orange-50/50 p-3 rounded-lg border border-orange-100 space-y-3">
                     <span class="text-xs font-bold text-orange-700 uppercase">Configurações do 2° Bloco</span>
                     
-                    <!-- Momento de Oração Opcional -->
                     <div class="border-b pb-2 space-y-2">
                         <div class="flex items-center">
                             <input type="checkbox" id="in-oracao-check" checked class="h-4 w-4 text-blue-600 border-gray-300 rounded">
@@ -126,7 +120,6 @@
                         <input type="text" id="in-dizimos" value="Yuri Lopes" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border">
                     </div>
                     
-                    <!-- Santa Ceia com Responsável -->
                     <div class="border-t pt-2 space-y-2">
                         <div class="flex items-center">
                             <input type="checkbox" id="in-ceia" checked class="h-4 w-4 text-blue-600 border-gray-300 rounded">
@@ -154,15 +147,21 @@
                 <!-- 4º BLOCO EDITÁVEL -->
                 <div class="bg-orange-50/50 p-3 rounded-lg border border-orange-100 space-y-3">
                     <span class="text-xs font-bold text-orange-700 uppercase">Configurações do 4° Bloco</span>
+                    
+                    <!-- NOVO: Apresentação de Criança antes da Palavra -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Apresentação de Criança antes da Palavra (Opcional)</label>
+                        <input type="text" id="in-extra4-inicio" value="" placeholder="Ex: Apresentação das crianças" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border text-sm italic">
+                    </div>
+
                     <div>
                         <label class="block text-sm font-medium text-gray-600">Ministração Palavra</label>
                         <input type="text" id="in-palavra" value="Pastor Rafael Almeida" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-500">Coral / Evento Especial (Opcional)</label>
+                        <label class="block text-sm font-medium text-gray-500">Coral / Evento Especial depois da Palavra (Opcional)</label>
                         <input type="text" id="in-extra4" value="Coral infantil" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border text-sm italic">
                     </div>
-                    <!-- NOVO: Aviso de última hora -->
                     <div>
                         <label class="block text-sm font-medium text-gray-500">Aviso de Última Hora (Opcional)</label>
                         <input type="text" id="in-aviso-final" value="" placeholder="Ex: Lembrete da reunião de pastores logo após o culto" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border text-sm italic">
@@ -221,6 +220,7 @@
 
                     <!-- 4º Bloco -->
                     <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5">
+                        <p id="out-extra4-inicio" class="text-blue-700 font-medium italic mb-1 hidden"></p>
                         <p><strong>Ministração Palavra:</strong> <span id="out-palavra">...</span></p>
                         <p id="out-extra4" class="text-blue-700 font-medium italic mt-1 hidden"></p>
                         <p id="out-aviso-final" class="text-blue-700 font-medium italic mt-1 hidden"></p>
