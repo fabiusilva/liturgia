@@ -1,8 +1,12 @@
-// Adicionado 'aviso-final' à lista de controle de salvamento e manipulação de textos
-const textInputs = ['data', 'horario', 'pregador', 'dirigente', 'louvor', 'extra1', 'oracao-resp', 'dizimos', 'ceia-resp', 'extra2', 'avisos', 'palavra', 'extra4', 'aviso-final', 'bencao'];
+// Adicionado 'extra4-inicio' na lista de inputs e persistência
+const textInputs = [
+    'data', 'horario', 'pregador', 'dirigente', 'louvor', 'extra1', 
+    'oracao-resp', 'dizimos', 'ceia-resp', 'extra2', 'avisos', 
+    'extra4-inicio', 'palavra', 'extra4', 'aviso-final', 'bencao'
+];
 const checkInputs = ['oracao-check', 'ceia'];
 
-// FUNÇÃO PARA SALVAR TUDO NO LOCALSTORAGE DO NAVEGADOR
+// FUNÇÃO PARA SALVAR TUDO NO LOCALSTORAGE
 function salvarNoNavegador() {
     const dadosCulto = {};
     
@@ -16,7 +20,7 @@ function salvarNoNavegador() {
     localStorage.setItem('memoria_liturgia_culto', JSON.stringify(dadosCulto));
 }
 
-// FUNÇÃO PARA CARREGAR OS DADOS SALVOS DA ÚLTIMA VEZ
+// FUNÇÃO PARA CARREGAR OS DADOS SALVOS
 function carregarDoNavegador() {
     const memoria = localStorage.getItem('memoria_liturgia_culto');
     if (!memoria) return;
@@ -36,7 +40,7 @@ function carregarDoNavegador() {
 }
 
 function atualizarPreview() {
-    // Exibe/Oculta inputs dos responsáveis conforme as caixas marcadas
+    // Exibe/Oculta inputs dos responsáveis
     const oracaoAtiva = document.getElementById('in-oracao-check').checked;
     document.getElementById('div-in-oracao-resp').classList.toggle('hidden', !oracaoAtiva);
     
@@ -56,10 +60,11 @@ function atualizarPreview() {
     // Tratamento dos Acontecimentos Opcionais
     tratarCampoOpcional('in-extra1', 'out-extra1');
     tratarCampoOpcional('in-extra2', 'out-extra2');
+    tratarCampoOpcional('in-extra4-inicio', 'out-extra4-inicio'); // NOVO: Apresentação antes da Palavra
     tratarCampoOpcional('in-extra4', 'out-extra4');
-    tratarCampoOpcional('in-aviso-final', 'out-aviso-final'); // NOVO: Aviso de última hora
+    tratarCampoOpcional('in-aviso-final', 'out-aviso-final');
 
-    // Exibição Condicional do Momento de Oração
+    // Momento de Oração
     const elOracaoOut = document.getElementById('out-oracao');
     if (oracaoAtiva) {
         document.getElementById('out-oracao-resp').innerText = document.getElementById('in-oracao-resp').value;
@@ -68,7 +73,7 @@ function atualizarPreview() {
         elOracaoOut.classList.add('hidden');
     }
 
-    // Exibição Condicional da Santa Ceia
+    // Santa Ceia
     const elCeiaOut = document.getElementById('out-ceia');
     if (ceiaAtiva) {
         document.getElementById('out-ceia-resp').innerText = document.getElementById('in-ceia-resp').value;
@@ -77,7 +82,7 @@ function atualizarPreview() {
         elCeiaOut.classList.add('hidden');
     }
 
-    // Geração dinâmica dos avisos
+    // Avisos
     const avisosTexto = document.getElementById('in-avisos').value.split('\n');
     const listaAvisos = document.getElementById('out-avisos');
     listaAvisos.innerHTML = '';
@@ -98,7 +103,7 @@ function atualizarPreview() {
     liFim.textContent = 'Oferta Missionária;';
     listaAvisos.appendChild(liFim);
 
-    // Salva o estado atual na memória interna
+    // Salva automaticamente
     salvarNoNavegador();
 }
 
