@@ -1,7 +1,7 @@
-// Adicionado 'extra4-inicio' na lista de inputs e persistência
+// Adicionado 'batizados' à lista de inputs e persistência
 const textInputs = [
     'data', 'horario', 'pregador', 'dirigente', 'louvor', 'extra1', 
-    'oracao-resp', 'dizimos', 'ceia-resp', 'extra2', 'avisos', 
+    'oracao-resp', 'dizimos', 'batizados', 'ceia-resp', 'extra2', 'avisos', 
     'extra4-inicio', 'palavra', 'extra4', 'aviso-final', 'bencao'
 ];
 const checkInputs = ['oracao-check', 'ceia'];
@@ -40,7 +40,7 @@ function carregarDoNavegador() {
 }
 
 function atualizarPreview() {
-    // Exibe/Oculta inputs dos responsáveis
+    // Exibe/Oculta inputs dos responsáveis conforme checkboxes
     const oracaoAtiva = document.getElementById('in-oracao-check').checked;
     document.getElementById('div-in-oracao-resp').classList.toggle('hidden', !oracaoAtiva);
     
@@ -59,8 +59,9 @@ function atualizarPreview() {
 
     // Tratamento dos Acontecimentos Opcionais
     tratarCampoOpcional('in-extra1', 'out-extra1');
+    tratarCampoOpcional('in-batizados', 'out-batizados'); // NOVO: Convocação dos Batizados
     tratarCampoOpcional('in-extra2', 'out-extra2');
-    tratarCampoOpcional('in-extra4-inicio', 'out-extra4-inicio'); // NOVO: Apresentação antes da Palavra
+    tratarCampoOpcional('in-extra4-inicio', 'out-extra4-inicio');
     tratarCampoOpcional('in-extra4', 'out-extra4');
     tratarCampoOpcional('in-aviso-final', 'out-aviso-final');
 
@@ -103,7 +104,7 @@ function atualizarPreview() {
     liFim.textContent = 'Oferta Missionária;';
     listaAvisos.appendChild(liFim);
 
-    // Salva automaticamente
+    // Salva automaticamente no navegador
     salvarNoNavegador();
 }
 
