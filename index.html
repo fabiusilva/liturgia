@@ -119,6 +119,12 @@
                         <label class="block text-sm font-medium text-gray-600">Dízimos e Ofertas</label>
                         <input type="text" id="in-dizimos" value="Yuri Lopes" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border">
                     </div>
+
+                    <!-- NOVO: Convocação dos Novos Batizados -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Convocação dos Novos Batizados (Opcional)</label>
+                        <input type="text" id="in-batizados" value="" placeholder="Ex: Convocação dos novos batizados" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border text-sm italic">
+                    </div>
                     
                     <div class="border-t pt-2 space-y-2">
                         <div class="flex items-center">
@@ -147,13 +153,10 @@
                 <!-- 4º BLOCO EDITÁVEL -->
                 <div class="bg-orange-50/50 p-3 rounded-lg border border-orange-100 space-y-3">
                     <span class="text-xs font-bold text-orange-700 uppercase">Configurações do 4° Bloco</span>
-                    
-                    <!-- NOVO: Apresentação de Criança antes da Palavra -->
                     <div>
                         <label class="block text-sm font-medium text-gray-500">Apresentação de Criança antes da Palavra (Opcional)</label>
                         <input type="text" id="in-extra4-inicio" value="" placeholder="Ex: Apresentação das crianças" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border text-sm italic">
                     </div>
-
                     <div>
                         <label class="block text-sm font-medium text-gray-600">Ministração Palavra</label>
                         <input type="text" id="in-palavra" value="Pastor Rafael Almeida" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border">
@@ -206,6 +209,7 @@
                     <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-0.5">
                         <p id="out-oracao" class="hidden"><strong>Momento de Oração:</strong> <span id="out-oracao-resp">...</span></p>
                         <p><strong>Dízimos e Ofertas:</strong> <span id="out-dizimos">...</span></p>
+                        <p id="out-batizados" class="text-blue-700 font-medium italic mt-1 hidden"></p>
                         <p id="out-ceia" class="font-bold text-red-700 mt-1 hidden">Santa Ceia: <span id="out-ceia-resp" class="font-normal text-black">...</span></p>
                         <p id="out-extra2" class="text-blue-700 font-medium italic mt-1 hidden"></p>
                     </div>
