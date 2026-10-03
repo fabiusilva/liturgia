@@ -81,7 +81,40 @@ function carregarDoNavegador() {
     });
 }
 
+// Máscara da data: só números, com as barras inseridas automaticamente (dd/mm/aaaa)
+function formatarData(valor) {
+    const digitos = valor.replace(/\D/g, '').slice(0, 8);
+    if (digitos.length > 4) return `${digitos.slice(0, 2)}/${digitos.slice(2, 4)}/${digitos.slice(4)}`;
+    if (digitos.length > 2) return `${digitos.slice(0, 2)}/${digitos.slice(2)}`;
+    return digitos;
+}
+
+// Confere se a data existe no calendário (ex: 31/02 não existe)
+function dataValida(valor) {
+    const partes = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(valor);
+    if (!partes) return false;
+    const dia = Number(partes[1]), mes = Number(partes[2]), ano = Number(partes[3]);
+    const data = new Date(ano, mes - 1, dia);
+    return data.getFullYear() === ano && data.getMonth() === mes - 1 && data.getDate() === dia;
+}
+
+function tratarCampoData() {
+    const inData = document.getElementById('in-data');
+    const formatada = formatarData(inData.value);
+    if (inData.value !== formatada) inData.value = formatada;
+
+    // Só acusa erro quando há algo digitado e a data está incompleta ou não existe
+    const invalida = formatada !== '' && !dataValida(formatada);
+    inData.classList.toggle('border-red-500', invalida);
+    inData.classList.toggle('bg-red-50', invalida);
+    inData.classList.toggle('border-gray-300', !invalida);
+    inData.classList.toggle('bg-gray-50', !invalida);
+    document.getElementById('aviso-data').classList.toggle('hidden', !invalida);
+}
+
 function atualizarPreview() {
+    tratarCampoData();
+
     // Exibe/Oculta inputs dos responsáveis conforme checkboxes
     const oracaoAtiva = document.getElementById('in-oracao-check').checked;
     document.getElementById('div-in-oracao-resp').classList.toggle('hidden', !oracaoAtiva);

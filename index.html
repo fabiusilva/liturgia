@@ -105,7 +105,8 @@
                 <div class="grid grid-cols-2 gap-3 md:gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-600">Data do Culto</label>
-                        <input type="text" id="in-data" value="14/06/2026" inputmode="numeric" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-gray-50 text-base">
+                        <input type="text" id="in-data" value="14/06/2026" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" autocomplete="off" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-gray-50 text-base">
+                        <p id="aviso-data" class="hidden text-xs text-red-600 mt-1">Data inválida. Use dd/mm/aaaa</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-600">Horário de Início</label>
