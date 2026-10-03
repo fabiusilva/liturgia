@@ -6,6 +6,40 @@ const textInputs = [
 ];
 const checkInputs = ['oracao-check', 'ceia'];
 
+// CULTOS DO DOMINGO (cada um com sua própria memória no navegador)
+const CULTOS = {
+    '10h': { horario: '10:00hs' },
+    '18h': { horario: '18:00hs' }
+};
+const paramCulto = new URLSearchParams(window.location.search).get('culto');
+const cultoAtual = CULTOS[paramCulto] ? paramCulto : '10h';
+const chaveMemoria = (culto) => `memoria_liturgia_culto_${culto}`;
+const CHAVE_ANTIGA = 'memoria_liturgia_culto'; // memória da versão com um culto só
+
+function lerMemoria(chave) {
+    try {
+        const memoria = localStorage.getItem(chave);
+        return memoria ? JSON.parse(memoria) : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+// Destaca a aba do culto atual
+function marcarAbaAtiva() {
+    Object.keys(CULTOS).forEach(culto => {
+        const aba = document.getElementById(`tab-${culto}`);
+        const ativa = culto === cultoAtual;
+        aba.classList.toggle('bg-blue-600', ativa);
+        aba.classList.toggle('text-white', ativa);
+        aba.classList.toggle('border-blue-600', ativa);
+        aba.classList.toggle('bg-white', !ativa);
+        aba.classList.toggle('text-gray-600', !ativa);
+        aba.classList.toggle('hover:bg-gray-100', !ativa);
+    });
+    document.title = `Gerador de Liturgia - Culto das ${cultoAtual}`;
+}
+
 // FUNÇÃO PARA SALVAR TUDO NO LOCALSTORAGE
 function salvarNoNavegador() {
     const dadosCulto = {};
@@ -17,15 +51,23 @@ function salvarNoNavegador() {
         dadosCulto[id] = document.getElementById(`in-${id}`).checked;
     });
 
-    localStorage.setItem('memoria_liturgia_culto', JSON.stringify(dadosCulto));
+    try {
+        localStorage.setItem(chaveMemoria(cultoAtual), JSON.stringify(dadosCulto));
+    } catch (e) {
+        console.warn('Não foi possível salvar no navegador:', e);
+    }
 }
 
 // FUNÇÃO PARA CARREGAR OS DADOS SALVOS
 function carregarDoNavegador() {
-    const memoria = localStorage.getItem('memoria_liturgia_culto');
-    if (!memoria) return;
+    let dadosCulto = lerMemoria(chaveMemoria(cultoAtual));
 
-    const dadosCulto = JSON.parse(memoria);
+    // Primeira vez neste culto: aproveita o que já existe para não começar do zero
+    if (!dadosCulto) {
+        const outroCulto = cultoAtual === '10h' ? '18h' : '10h';
+        dadosCulto = lerMemoria(CHAVE_ANTIGA) || lerMemoria(chaveMemoria(outroCulto)) || {};
+        dadosCulto.horario = CULTOS[cultoAtual].horario;
+    }
 
     textInputs.forEach(id => {
         if (dadosCulto[id] !== undefined) {
@@ -130,30 +172,66 @@ checkInputs.forEach(id => {
 // Baixar Imagem PNG
 function baixarPNG() {
     const card = document.getElementById('card-unico');
-    html2canvas(card, { scale: 2 }).then(canvas => {
+    html2canvas(card, {
+        scale: 2,
+        // Mantém o PNG sempre com 350px de largura, mesmo gerado no celular
+        onclone: (doc) => {
+            const cardClone = doc.getElementById('card-unico');
+            cardClone.style.width = '350px';
+            cardClone.style.maxWidth = 'none';
+        }
+    }).then(canvas => {
         const link = document.createElement('a');
-        link.download = `liturgia-${document.getElementById('in-data').value.replace(/\//g, '-')}.png`;
+        link.download = `liturgia-${document.getElementById('in-data').value.replace(/\//g, '-')}-${cultoAtual}.png`;
         link.href = canvas.toDataURL();
         link.click();
     });
 }
 
-// Impressão 3x
-function imprimir3x() {
+// Monta as 3 cópias lado a lado e reduz a fonte até tudo caber em 1 página
+const FONTE_MAXIMA = 17;
+const FONTE_MINIMA = 9;
+
+function prepararImpressao() {
     const printArea = document.getElementById('print-area');
     const cardOriginal = document.getElementById('card-unico');
-    
-    printArea.innerHTML = ''; 
-    
+
+    printArea.innerHTML = '';
+
     for (let i = 0; i < 3; i++) {
         const clone = cardOriginal.cloneNode(true);
         clone.id = `card-clone-${i}`;
+        clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
         printArea.appendChild(clone);
     }
-    
+
+    // Mede fora da tela, no mesmo tamanho da folha (A4 deitado)
+    printArea.classList.add('medindo');
+    const cardMedido = printArea.firstElementChild;
+    let fonte = FONTE_MAXIMA;
+    printArea.style.setProperty('--fonte', `${fonte}px`);
+    while (cardMedido.scrollHeight > cardMedido.clientHeight && fonte > FONTE_MINIMA) {
+        fonte -= 0.5;
+        printArea.style.setProperty('--fonte', `${fonte}px`);
+    }
+    printArea.classList.remove('medindo');
+}
+
+// Impressão 3x
+function imprimir3x() {
+    prepararImpressao();
     window.print();
 }
 
+// Também funciona se imprimir pelo menu do navegador (Ctrl+P)
+window.addEventListener('beforeprint', prepararImpressao);
+
+// Limpa as cópias depois de imprimir
+window.addEventListener('afterprint', () => {
+    document.getElementById('print-area').innerHTML = '';
+});
+
 // Inicialização
+marcarAbaAtiva();
 carregarDoNavegador();
 atualizarPreview();

@@ -3,79 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2563eb">
     <title>Gerador de Liturgia - Igreja</title>
     <!-- Tailwind CSS para um visual limpo e rápido -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- html2canvas para gerar o PNG do card -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
+
     <style>
-        /* CONFIGURAÇÃO EXCLUSIVA PARA IMPRESSÃO (A4 PAISAGEM - 1 PÁGINA RIGOROSA) */
+        /* ÁREA DE IMPRESSÃO: A4 PAISAGEM, 1 PÁGINA, 3 COLUNAS
+           Medidas em mm para a tela (medição) e a impressão usarem o mesmo tamanho.
+           A4 deitado = 297 x 210mm, menos 8mm de margem em cada lado. */
+        #print-area {
+            --fonte: 17px; /* ajustada pelo script para o conteúdo caber na folha */
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6mm;
+            width: 281mm;
+            height: 192mm;
+            box-sizing: border-box;
+            background: white;
+        }
+
+        /* Usado pelo script para medir o conteúdo fora da tela antes de imprimir */
+        #print-area.medindo {
+            display: grid;
+            position: fixed;
+            left: -10000px;
+            top: 0;
+        }
+
+        #print-area .card-liturgia {
+            width: auto !important;
+            max-width: none !important;
+            height: 100% !important;
+            overflow: hidden;
+            box-sizing: border-box;
+            box-shadow: none !important;
+            border: 2px solid #555 !important;
+            border-radius: 8px !important;
+            padding: calc(var(--fonte) * 0.8) !important;
+            font-size: var(--fonte) !important;
+            line-height: 1.35 !important;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            break-inside: avoid;
+        }
+        #print-area .card-liturgia > * { margin-top: 0 !important; }
+        #print-area .card-liturgia h3 { font-size: calc(var(--fonte) * 1.4) !important; }
+        #print-area .card-liturgia p,
+        #print-area .card-liturgia li { font-size: var(--fonte) !important; color: black !important; }
+        #print-area .card-liturgia .border { padding: calc(var(--fonte) * 0.55) !important; }
+        #print-area .card-liturgia ul { padding-left: calc(var(--fonte) * 1.3) !important; }
+
         @media print {
-            body > div:first-child { display: none !important; }
-            
-            #print-area {
-                display: flex !important;
-                justify-content: space-between !important;
-                gap: 20px;
-                width: 100% !important;
-                height: 100% !important;
-                position: absolute !important;
-                left: 0 !important;
-                top: 0 !important;
+            @page {
+                size: A4 landscape;
+                margin: 8mm;
+            }
+
+            html, body {
                 margin: 0 !important;
                 padding: 0 !important;
-                box-sizing: border-box;
-                background: white;
+                min-height: 0 !important;
+                background: white !important;
             }
 
-            .card-liturgia {
-                width: 31% !important;
-                height: 96vh !important;
-                box-shadow: none !important;
-                border: 2px solid #555 !important;
-                padding: 16px !important;
-                font-size: 18px !important; 
-                line-height: 1.4 !important;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                page-break-inside: avoid;
-            }
+            #app { display: none !important; }
 
-            .card-liturgia h3 { font-size: 24px !important; margin-bottom: 4px !important; }
-            .card-liturgia p, .card-liturgia li { font-size: 17px !important; color: black !important; }
-            .card-liturgia .border { padding: 10px !important; margin-bottom: 6px !important; }
-            .card-liturgia ul { padding-left: 24px !important; }
-
-            @page { 
-                size: landscape; 
-                margin: 0.3cm; 
+            #print-area {
+                display: grid !important;
+                position: static !important;
+                overflow: hidden;
+                break-after: avoid;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-4 md:p-8">
+<body class="bg-gray-100 min-h-screen p-2 pb-24 md:p-8">
 
-    <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">⛪ Gerador de Liturgia</h1>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- COLUNA DA ESQUERDA: FORMULÁRIO -->
-            <div class="space-y-4 max-h-[82vh] overflow-y-auto pr-2">
-                <div class="flex justify-between items-center">
+    <div id="app" class="max-w-6xl mx-auto bg-white rounded-xl shadow-md p-4 md:p-6">
+        <h1 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 border-b pb-2">⛪ Gerador de Liturgia</h1>
+
+        <!-- ABAS DOS CULTOS (cada culto tem sua própria liturgia e memória) -->
+        <div class="flex gap-2 mb-4 md:mb-6">
+            <a id="tab-10h" href="?culto=10h" class="aba-culto flex-1 text-center font-bold py-3 px-2 rounded-lg border transition-all">☀️ Culto das 10h</a>
+            <a id="tab-18h" href="?culto=18h" class="aba-culto flex-1 text-center font-bold py-3 px-2 rounded-lg border transition-all">🌙 Culto das 18h</a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            <!-- FORMULÁRIO (no celular fica em cima; no computador, à esquerda) -->
+            <div class="space-y-4 md:max-h-[82vh] md:overflow-y-auto md:pr-2">
+                <div class="flex flex-wrap justify-between items-center gap-2">
                     <h2 class="text-lg font-semibold text-gray-700">Editar Informações</h2>
                     <span class="text-xs bg-green-100 text-green-800 font-medium px-2.5 py-0.5 rounded shadow-sm">💾 Alterações salvas automaticamente</span>
                 </div>
-                
-                <div class="grid grid-cols-2 gap-4">
+
+                <div class="grid grid-cols-2 gap-3 md:gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-600">Data do Culto</label>
-                        <input type="text" id="in-data" value="14/06/2026" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 border">
+                        <input type="text" id="in-data" value="14/06/2026" inputmode="numeric" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-gray-50 text-base">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-600">Horário de Início</label>
-                        <input type="text" id="in-horario" value="10:00hs" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 border">
+                        <input type="text" id="in-horario" value="10:00hs" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-gray-50 text-base">
                     </div>
                 </div>
 
@@ -84,62 +118,62 @@
                     <span class="text-xs font-bold text-orange-700 uppercase">Configurações do 1° Bloco</span>
                     <div>
                         <label class="block text-sm font-medium text-gray-600">Pregador</label>
-                        <input type="text" id="in-pregador" value="Pastor Rafael Almeida" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border">
+                        <input type="text" id="in-pregador" value="Pastor Rafael Almeida" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-white text-base">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-600">Dirigente</label>
-                        <input type="text" id="in-dirigente" value="Yuri Lopes" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border">
+                        <input type="text" id="in-dirigente" value="Yuri Lopes" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-white text-base">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-600">Louvor (Quem Ministra)</label>
-                        <input type="text" id="in-louvor" value="Ministério CLM Adoração" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border">
+                        <input type="text" id="in-louvor" value="Ministério CLM Adoração" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-white text-base">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-500">Acontecimento Extra (Opcional)</label>
-                        <input type="text" id="in-extra1" value="Dança das crianças antes da oferta" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border text-sm italic">
+                        <input type="text" id="in-extra1" value="Dança das crianças antes da oferta" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-white text-base italic">
                     </div>
                 </div>
 
                 <!-- 2º BLOCO EDITÁVEL -->
                 <div class="bg-orange-50/50 p-3 rounded-lg border border-orange-100 space-y-3">
                     <span class="text-xs font-bold text-orange-700 uppercase">Configurações do 2° Bloco</span>
-                    
-                    <div class="border-b pb-2 space-y-2">
-                        <div class="flex items-center">
-                            <input type="checkbox" id="in-oracao-check" checked class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                            <label class="ml-2 block text-sm text-gray-900 font-medium">Incluir Momento de Oração?</label>
-                        </div>
+
+                    <div class="border-b pb-3 space-y-2">
+                        <label class="flex items-center py-1 cursor-pointer">
+                            <input type="checkbox" id="in-oracao-check" checked class="h-5 w-5 text-blue-600 border-gray-300 rounded">
+                            <span class="ml-2 block text-sm text-gray-900 font-medium">Incluir Momento de Oração?</span>
+                        </label>
                         <div id="div-in-oracao-resp">
                             <label class="block text-xs font-medium text-gray-500">Responsável pela Oração</label>
-                            <input type="text" id="in-oracao-resp" value="Missionária Ana" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 bg-white border text-sm">
+                            <input type="text" id="in-oracao-resp" value="Missionária Ana" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-white text-base">
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-600">Dízimos e Ofertas</label>
-                        <input type="text" id="in-dizimos" value="Yuri Lopes" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border">
+                        <input type="text" id="in-dizimos" value="Yuri Lopes" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-white text-base">
                     </div>
 
-                    <!-- NOVO: Convocação dos Novos Batizados -->
+                    <!-- Convocação dos Novos Batizados -->
                     <div>
                         <label class="block text-sm font-medium text-gray-500">Convocação dos Novos Batizados (Opcional)</label>
-                        <input type="text" id="in-batizados" value="" placeholder="Ex: Convocação dos novos batizados" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border text-sm italic">
+                        <input type="text" id="in-batizados" value="" placeholder="Ex: Convocação dos novos batizados" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-white text-base italic">
                     </div>
-                    
-                    <div class="border-t pt-2 space-y-2">
-                        <div class="flex items-center">
-                            <input type="checkbox" id="in-ceia" checked class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                            <label class="ml-2 block text-sm text-gray-900 font-medium">Este culto terá a Santa Ceia?</label>
-                        </div>
+
+                    <div class="border-t pt-3 space-y-2">
+                        <label class="flex items-center py-1 cursor-pointer">
+                            <input type="checkbox" id="in-ceia" checked class="h-5 w-5 text-blue-600 border-gray-300 rounded">
+                            <span class="ml-2 block text-sm text-gray-900 font-medium">Este culto terá a Santa Ceia?</span>
+                        </label>
                         <div id="div-in-ceia-resp">
                             <label class="block text-xs font-medium text-gray-500">Responsável pela Santa Ceia</label>
-                            <input type="text" id="in-ceia-resp" value="Pastor Rafael Almeida" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-1.5 bg-white border text-sm">
+                            <input type="text" id="in-ceia-resp" value="Pastor Rafael Almeida" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-white text-base">
                         </div>
                     </div>
-                    
+
                     <div>
                         <label class="block text-sm font-medium text-gray-500">Apresentação / Data Comemorativa (Opcional)</label>
-                        <input type="text" id="in-extra2" value="Dança das adolescentes" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border text-sm italic">
+                        <input type="text" id="in-extra2" value="Dança das adolescentes" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-white text-base italic">
                     </div>
                 </div>
 
@@ -147,7 +181,7 @@
                 <div class="bg-orange-50/50 p-3 rounded-lg border border-orange-100 space-y-2">
                     <span class="text-xs font-bold text-orange-700 uppercase">Configurações do 3° Bloco (Avisos)</span>
                     <label class="block text-sm font-medium text-gray-600">Avisos da Semana (Um por linha)</label>
-                    <textarea id="in-avisos" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border text-sm">Reunião de Mulheres na Terça às 19:30&#13;Ensaio do Ministério de Louvor na Quinta&#13;Mutirão de Limpeza no Sábado&#13;Reunião de Líderes dia 13/06 (Sábado às 8:30)&#13;Ação Social dia 27/06 - Pastores Francisco e Carmem</textarea>
+                    <textarea id="in-avisos" rows="5" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-white text-base">Reunião de Mulheres na Terça às 19:30&#13;Ensaio do Ministério de Louvor na Quinta&#13;Mutirão de Limpeza no Sábado&#13;Reunião de Líderes dia 13/06 (Sábado às 8:30)&#13;Ação Social dia 27/06 - Pastores Francisco e Carmem</textarea>
                 </div>
 
                 <!-- 4º BLOCO EDITÁVEL -->
@@ -155,43 +189,47 @@
                     <span class="text-xs font-bold text-orange-700 uppercase">Configurações do 4° Bloco</span>
                     <div>
                         <label class="block text-sm font-medium text-gray-500">Apresentação de Criança antes da Palavra (Opcional)</label>
-                        <input type="text" id="in-extra4-inicio" value="" placeholder="Ex: Apresentação das crianças" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border text-sm italic">
+                        <input type="text" id="in-extra4-inicio" value="" placeholder="Ex: Apresentação das crianças" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-white text-base italic">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-600">Ministração Palavra</label>
-                        <input type="text" id="in-palavra" value="Pastor Rafael Almeida" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border">
+                        <input type="text" id="in-palavra" value="Pastor Rafael Almeida" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-white text-base">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-500">Coral / Evento Especial depois da Palavra (Opcional)</label>
-                        <input type="text" id="in-extra4" value="Coral infantil" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border text-sm italic">
+                        <input type="text" id="in-extra4" value="Coral infantil" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-white text-base italic">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-500">Aviso de Última Hora (Opcional)</label>
-                        <input type="text" id="in-aviso-final" value="" placeholder="Ex: Lembrete da reunião de pastores logo após o culto" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border text-sm italic">
+                        <input type="text" id="in-aviso-final" value="" placeholder="Ex: Lembrete da reunião de pastores logo após o culto" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-white text-base italic">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-600">Bênção Apostólica</label>
-                        <input type="text" id="in-bencao" value="Pastor Rafael Almeida" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-white border">
+                        <input type="text" id="in-bencao" value="Pastor Rafael Almeida" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-white text-base">
                     </div>
                 </div>
 
-                <!-- BOTÕES DE AÇÃO -->
-                <div class="pt-2 flex gap-4">
-                    <button onclick="baixarPNG()" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-4 rounded shadow transition-all">
-                        📥 Baixar PNG
+                <!-- BOTÕES DE AÇÃO (no celular ficam fixos no rodapé da tela) -->
+                <div class="fixed bottom-0 inset-x-0 z-10 bg-white/95 backdrop-blur border-t shadow-lg p-3 flex gap-2
+                            md:static md:z-auto md:bg-transparent md:backdrop-blur-none md:border-0 md:shadow-none md:p-0 md:pt-2 md:gap-4">
+                    <a href="#previa" class="md:hidden flex-1 text-center bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 px-2 rounded shadow text-sm">
+                        👁️ Prévia
+                    </a>
+                    <button onclick="baixarPNG()" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 md:py-2.5 px-2 md:px-4 rounded shadow transition-all text-sm md:text-base">
+                        📥 <span class="md:hidden">PNG</span><span class="hidden md:inline">Baixar PNG</span>
                     </button>
-                    <button onclick="imprimir3x()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded shadow transition-all">
-                        🖨️ Imprimir / PDF 3x
+                    <button onclick="imprimir3x()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 md:py-2.5 px-2 md:px-4 rounded shadow transition-all text-sm md:text-base">
+                        🖨️ Imprimir<span class="hidden md:inline"> 3x</span>
                     </button>
                 </div>
             </div>
 
-            <!-- COLUNA DA DIREITA: PREVIEW EM TEMPO REAL -->
-            <div class="bg-gray-50 p-4 rounded-xl border flex flex-col items-center justify-start overflow-y-auto">
+            <!-- PRÉVIA EM TEMPO REAL (no celular fica embaixo; no computador, à direita) -->
+            <div id="previa" class="scroll-mt-4 bg-gray-50 p-3 md:p-4 rounded-xl border flex flex-col items-center justify-start overflow-x-hidden">
                 <h2 class="text-lg font-semibold text-gray-700 mb-4 self-start">Visualização da Liturgia</h2>
-                
+
                 <!-- Card Único (Preview) -->
-                <div id="card-unico" class="card-liturgia bg-white w-[350px] p-5 rounded-xl shadow-md border border-gray-200 text-sm font-sans space-y-4">
+                <div id="card-unico" class="card-liturgia bg-white w-full max-w-[350px] p-5 rounded-xl shadow-md border border-gray-200 text-sm font-sans space-y-4">
                     <div class="text-center">
                         <h3 class="text-xl font-bold tracking-wide text-gray-900">CULTO - <span id="out-data">00/00/00</span></h3>
                         <p class="italic text-gray-600 text-xs">Início: <span id="out-horario">10:00hs</span></p>
